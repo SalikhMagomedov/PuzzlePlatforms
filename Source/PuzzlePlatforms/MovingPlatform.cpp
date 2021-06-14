@@ -10,12 +10,27 @@ AMovingPlatform::AMovingPlatform()
 	SetMobility(EComponentMobility::Movable);
 }
 
+void AMovingPlatform::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!HasAuthority())
+	{
+		return;
+	}
+	
+	SetReplicates(true);
+	SetReplicateMovement(true);
+}
+
 void AMovingPlatform::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
 	if (!HasAuthority())
+	{
 		return;
+	}
 
 	auto Location = GetActorLocation();
 
