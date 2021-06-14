@@ -14,13 +14,14 @@ void AMovingPlatform::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!HasAuthority())
+	if (HasAuthority())
 	{
-		return;
+		SetReplicates(true);
+		SetReplicateMovement(true);
 	}
-	
-	SetReplicates(true);
-	SetReplicateMovement(true);
+
+	GlobalStartLocation = GetActorLocation();
+	GlobalTargetLocation = GetTransform().TransformPosition(TargetLocation);
 }
 
 void AMovingPlatform::Tick(const float DeltaSeconds)
@@ -33,8 +34,15 @@ void AMovingPlatform::Tick(const float DeltaSeconds)
 	}
 
 	auto Location = GetActorLocation();
-	const auto GlobalTargetLocation = GetTransform().TransformPosition(TargetLocation);
-	const auto Direction = (GlobalTargetLocation - Location).GetSafeNormal();
+	const auto JourneyLength = (GlobalTargetLocation - GlobalStartLocation).Size();
+	const auto JourneyTraveled = (Location - GlobalStartLocation).Size();
+
+	if (JourneyTraveled > JourneyLength)
+	{
+		Swap(GlobalStartLocation, GlobalTargetLocation);
+	}
+	
+	const auto Direction = (GlobalTargetLocation - GlobalStartLocation).GetSafeNormal();
 
 	Location += Direction * (Speed * DeltaSeconds);
 	SetActorLocation(Location);

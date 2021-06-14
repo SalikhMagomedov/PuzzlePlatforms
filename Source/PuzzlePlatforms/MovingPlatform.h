@@ -26,4 +26,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Meta = (MakeEditWidget = true))
 	FVector TargetLocation;
+
+	FVector GlobalTargetLocation;
+	FVector GlobalStartLocation;
 };
